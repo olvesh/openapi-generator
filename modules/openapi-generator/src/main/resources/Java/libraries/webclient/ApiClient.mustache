@@ -555,11 +555,13 @@ public class ApiClient {
         updateParamsForAuth(authNames, queryParams, headerParams, cookieParams);
 
         final UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(basePath).path(path);
-        if (queryParams != null) {
-            builder.queryParams(queryParams);
-        }
+        final WebClient.RequestBodySpec requestBuilder = webClient.method(method).uri(builder.build(false).toUriString(), uriBuilder -> {
+            if (queryParams != null) {
+                uriBuilder.queryParams(queryParams);
+            }
+            return uriBuilder.build(pathParams);
+        });
 
-        final WebClient.RequestBodySpec requestBuilder = webClient.method(method).uri(builder.build(false).toUriString(), pathParams);
         if(accept != null) {
             requestBuilder.accept(accept.toArray(new MediaType[accept.size()]));
         }
